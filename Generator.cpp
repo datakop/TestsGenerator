@@ -15,26 +15,29 @@ void Generator::generate()
 {
 	_test_file << "Hello!";
 
-	generateHeader();
-	generateFunctionsBody();
-	generateMain();
+	_generateHeader();
+	_generateFunctionsBody();
+	_generateMain();
 }
 
 
 
+void Generator::_generateHeader()
+{
 
+}
+void Generator::_generateFunctionsBody()
+{
 
+}
+void Generator::_generateMain()
+{
 
-
-
-
-
-
+}
 
 
 Generator::~Generator()
 {
 	// Close generated file.
 	_test_file.close();
-	cout << "Kill Generator! "<< _func_num << endl;
 }
