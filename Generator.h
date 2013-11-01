@@ -5,11 +5,14 @@
 
 #include <fstream>
 
+class Template;
 class Generator
 {
 private:
 	unsigned int _func_num; // Number of random functions
 	std::ofstream _test_file;
+
+	Template *_template;
 
 	void _generateHeader();
 	void _generateFunctionsBody();
