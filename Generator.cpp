@@ -2,6 +2,8 @@
 #include "Generator.h"
 
 #include <iostream>
+#include <cstdlib>
+
 
 using namespace std;
 
@@ -21,18 +23,22 @@ void Generator::generate()
 }
 
 
-
 void Generator::_generateHeader()
 {
-
+	_test_file << _template->getHeader() << endl;
 }
+
+
 void Generator::_generateFunctionsBody()
 {
-	cout << _template->getFunctionByNum(10) << endl;
+	for(int i = 0; i < _func_num; ++i)
+		_test_file << _template->getFunctionByNum(i) << endl;
 }
+
+
 void Generator::_generateMain()
 {
-
+	_test_file << _template->getMain() << endl;
 }
 
 
@@ -42,5 +48,5 @@ Generator::~Generator()
 	_test_file.close();
 	delete _template;
 
-	cout << "Destroy Generator." << endl; 
+	// cout << "Destroy Generator." << endl; 
 }
