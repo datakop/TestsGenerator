@@ -38,7 +38,7 @@ void Generator::_generateFunctionsBody()
 
 void Generator::_generateMain()
 {
-	_test_file << _template->getMain() << endl;
+	_test_file << _template->getMain(2) << endl;
 }
 
 

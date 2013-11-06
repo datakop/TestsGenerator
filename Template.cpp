@@ -5,13 +5,18 @@
 #include <ctemplate/template.h>  
 #include <algorithm>
 #include <random>
+#include <ctime>
 
 using namespace std;
+
+namespace statment {
+	enum STMT { IF, FOR, CALL };
+}
 
 
 Template::Template()
 {
-
+	srand (time(NULL));
 }
 
 
@@ -44,6 +49,85 @@ string Template::getFunctionByNum(int num)
 }
 
 
+// TODO(kopbob): translate bool to string for COUNT param
+string f_IF(bool boolSTMT, string stmt1 ,string stmt2)
+{
+	ctemplate::TemplateDictionary dict("for");
+	dict.SetValue("BOOL", "true");
+	dict.SetValue("STMT1", stmt1);
+	dict.SetValue("STMT2", stmt2);
+	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/stmts/if.tpl",
+														ctemplate::DO_NOT_STRIP);
+	
+	string output;
+	tpl->Expand(&output, &dict);
+
+	return output;
+}
+
+
+string f_FOR(int count, string stmt)
+{
+	ctemplate::TemplateDictionary dict("for");
+	dict.SetValue("COUNT", to_string(count));
+	dict.SetValue("STMT", stmt);
+
+	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/stmts/for.tpl",
+														ctemplate::DO_NOT_STRIP);
+	
+	string output;
+	tpl->Expand(&output, &dict);
+
+	return output;
+}
+
+
+string f_CALL(int num)
+{
+	ctemplate::TemplateDictionary dict("call");
+	dict.SetValue("NUM", to_string(num));
+
+	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/stmts/call.tpl",
+														ctemplate::DO_NOT_STRIP);
+	
+	string output;
+	tpl->Expand(&output, &dict);
+
+	return output;
+}
+
+
+string getStmt()
+{
+	statment::STMT c = static_cast<statment::STMT>(rand() % 3);
+	switch (c) 
+	{
+		case statment::IF:
+		{
+			return f_IF(true, getStmt(), getStmt());
+		}
+		case statment::FOR:
+		{
+			return f_FOR(rand()%100 + 1, getStmt());
+		}
+		case statment::CALL:
+		{
+			return f_CALL(rand()%100 + 1);
+		}
+		default:
+		{
+			cout << "ERROR" << endl;
+			return "";
+		}
+	}
+}
+
+string generateMain(int i)
+{
+	if (i) return getStmt() + generateMain(--i);
+	else return string("");
+}
+
 string Template::getMain()
 {
 	string output;
@@ -66,6 +150,23 @@ string Template::getMain()
 			ctemplate::DO_NOT_STRIP,
 			&dict,
 			&output);
+	cout << generateMain(1) << endl;
+
+	return output;
+}
+
+string Template::getMain(int i)
+{
+	string output;
+	ctemplate::TemplateDictionary dict("BODY");
+	dict.SetValue("BODY", generateMain(i));
+
+	// Compile template to output
+	ctemplate::ExpandTemplate("./templates/main.tpl",
+			ctemplate::DO_NOT_STRIP,
+			&dict,
+			&output);
+	// cout << generateMain(1) << endl;
 
 	return output;
 }

@@ -17,6 +17,7 @@ public:
 	std::string getHeader();
 	std::string getFunctionByNum(int);
 	std::string getMain();
+	std::string getMain(int);
 };
 
 
