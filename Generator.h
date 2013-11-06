@@ -16,14 +16,18 @@ private:
 
 	void _generateHeader();
 	void _generateFunctionsBody();
-	void _generateMain();
+	void _generateMain(int);
+
+	void _mainHead();
+	void _mainBody(int);
+	void _mainFooter();
 
 public:
 	Generator(int,const char*);
 	~Generator();
 
 	// Generate test file
-	void generate();
+	void generate(int);
 };
 
 

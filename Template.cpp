@@ -48,12 +48,28 @@ string Template::getFunctionByNum(int num)
 	return output;
 }
 
+string Template::getMainHead()
+{
+	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/main/head.tpl",
+														ctemplate::DO_NOT_STRIP);
+	
+	string output;
+	tpl->Expand(&output, NULL);
+
+	return output;
+}
+
+// string Template::getMainBody(int i)
+// {
+// 	return to_string(i);
+// }
+
 
 // TODO(kopbob): translate bool to string for COUNT param
 string f_IF(bool boolSTMT, string stmt1 ,string stmt2)
 {
 	ctemplate::TemplateDictionary dict("for");
-	dict.SetValue("BOOL", "true");
+	dict.SetValue("BOOL", "1");
 	dict.SetValue("STMT1", stmt1);
 	dict.SetValue("STMT2", stmt2);
 	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/stmts/if.tpl",
@@ -108,7 +124,7 @@ string getStmt()
 		}
 		case statment::FOR:
 		{
-			return f_FOR(rand()%100 + 1, getStmt());
+			return f_FOR(rand()%10 + 1, getStmt());
 		}
 		case statment::CALL:
 		{
@@ -155,14 +171,14 @@ string Template::getMain()
 	return output;
 }
 
-string Template::getMain(int i)
+string Template::getMainBody(int i)
 {
 	string output;
 	ctemplate::TemplateDictionary dict("BODY");
 	dict.SetValue("BODY", generateMain(i));
 
 	// Compile template to output
-	ctemplate::ExpandTemplate("./templates/main.tpl",
+	ctemplate::ExpandTemplate("./templates/main/body.tpl",
 			ctemplate::DO_NOT_STRIP,
 			&dict,
 			&output);

@@ -15,11 +15,11 @@ Generator::Generator(int func_num, const char* file_name)
 	_template = new Template();
 }
 
-void Generator::generate()
+void Generator::generate(int i)
 {
 	_generateHeader();
 	_generateFunctionsBody();
-	_generateMain();
+	_generateMain(i);
 }
 
 
@@ -36,9 +36,33 @@ void Generator::_generateFunctionsBody()
 }
 
 
-void Generator::_generateMain()
+
+void Generator::_mainHead()
 {
-	_test_file << _template->getMain(2) << endl;
+	_test_file << _template->getMainHead() << endl;
+}
+
+void Generator::_mainBody(int count)
+{	
+	for (int i = 0; i < count; ++i)
+	{
+		_test_file << _template->getMainBody(1) << endl;
+	}
+}
+
+// TODO(kopbob): fix it, Generator can't do what!
+void Generator::_mainFooter()
+{
+	_test_file << "return 0;\n}" << endl;
+}
+
+
+void Generator::_generateMain(int i)
+{
+	_mainHead();
+	_mainBody(i);
+	_mainFooter();
+	// _test_file << _template->getMain(i) << endl;
 }
 
 
