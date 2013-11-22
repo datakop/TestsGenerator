@@ -15,10 +15,10 @@ int main(int argc, char const *argv[])
 	cout << "Please, enter number of iterations: ";
 	cin >> iterations;
 
-	Generator g(func_num , "t_file.c");
-	g.generate(iterations);
+	Generator g(func_num , "t_file.c"); 
+	g.generate(iterations);				// Run Generator
 
-	cout << "\nTest is generated.!\n";
+	cout << "\nTest is generated!\n";
 
 	return 0;
 }

@@ -11,7 +11,6 @@ using namespace std;
 			Constructor and Destructor
 ___________________________________________________
 */
-
 Generator::Generator(int func_num, const char* file_name)
 {
 	_func_num = func_num;
@@ -20,19 +19,18 @@ Generator::Generator(int func_num, const char* file_name)
 	_template = new Template();
 }
 
+Generator::~Generator()
+{
+	// Close generated file.
+	_test_file.close();
+	delete _template;
+}
 
 
 /*
 			Public Methods
 ___________________________________________________
 */
-
-
-/*
-			Private Methods
-___________________________________________________
-*/
-
 void Generator::generate(int i)
 {
 	_generateHeader();
@@ -40,7 +38,10 @@ void Generator::generate(int i)
 	_generateMain(i);
 }
 
-
+/*
+			Private Methods
+___________________________________________________
+*/
 void Generator::_generateHeader()
 {
 	_test_file << _template->getHeader() << endl;
@@ -53,7 +54,12 @@ void Generator::_generateFunctionsBody()
 		_test_file << _template->getFunctionByNum(i) << endl;
 }
 
-
+void Generator::_generateMain(int i)
+{
+	_mainHead();
+	_mainBody(i);
+	_mainFooter();
+}
 
 void Generator::_mainHead()
 {
@@ -75,20 +81,4 @@ void Generator::_mainFooter()
 }
 
 
-void Generator::_generateMain(int i)
-{
-	_mainHead();
-	_mainBody(i);
-	_mainFooter();
-	// _test_file << _template->getMain(i) << endl;
-}
 
-
-Generator::~Generator()
-{
-	// Close generated file.
-	_test_file.close();
-	delete _template;
-
-	// cout << "Destroy Generator." << endl; 
-}

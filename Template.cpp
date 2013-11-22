@@ -2,7 +2,7 @@
 #include "Template.h"
 
 #include <iostream>
-#include <ctemplate/template.h>  
+// #include <ctemplate/template.h>  
 #include <algorithm>
 #include <random>
 #include <ctime>
@@ -15,6 +15,15 @@ namespace statment {
 	enum STMT { IF, FOR, CALL };
 }
 
+string _fillTemplate(ctemplate::TemplateDictionary &dict, string tpl_name)
+{
+	string output;
+	ctemplate::ExpandTemplate(string("./templates/") + tpl_name,
+			ctemplate::DO_NOT_STRIP,
+			&dict,
+			&output);
+	return output;
+}
 
 /*
 			Constructor and Destructor
@@ -23,16 +32,13 @@ ___________________________________________________
 
 Template::Template()
 {
-	srand (time(NULL));
+	srand(time(NULL)); 
 }
 
 
 Template::~Template()
 {
-	// cout << "Destroy Template." << endl;
 }
-
-
 
 
 
@@ -41,138 +47,39 @@ Template::~Template()
 ___________________________________________________
 */
 
-
-/*
-			Private Methods
-___________________________________________________
-*/
-
 string Template::getHeader()
 {
-	string output;
-	ctemplate::ExpandTemplate("./templates/header.tpl",
-			ctemplate::DO_NOT_STRIP,
-			NULL,
-			&output);
-	return output;
+	ctemplate::TemplateDictionary dict("empty");
+	return _fillTemplate(dict, "header.tpl");
 }
-
 
 string Template::getFunctionByNum(int num)
 {
-
 	_funcNums.push_back(num);
 
 	ctemplate::TemplateDictionary dict("func");
 	dict["NUM"] = num;
 
-	string output;
-	ctemplate::ExpandTemplate("./templates/function.tpl",
-			ctemplate::DO_NOT_STRIP,
-			&dict,
-			&output);
-
-	return output;
+	return _fillTemplate(dict, "function.tpl");
 }
 
 string Template::getMainHead()
 {
-	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/main/head.tpl",
-														ctemplate::DO_NOT_STRIP);
-	
+	ctemplate::TemplateDictionary dict("empty");
+	return _fillTemplate(dict, "main/head.tpl");
+}
+
+// TODO(kopbob): fix i vaiable
+// Get pice of main body
+string Template::getMainBody(int i)
+{
 	string output;
-	tpl->Expand(&output, NULL);
-
-	return output;
+	ctemplate::TemplateDictionary dict("BODY");
+	dict.SetValue("BODY", _generateMain(i));	
+	return _fillTemplate(dict, "main/body.tpl");
 }
 
-// string Template::getMainBody(int i)
-// {
-// 	return to_string(i);
-// }
-
-
-// TODO(kopbob): translate bool to string for COUNT param
-string f_IF(bool boolSTMT, string stmt1 ,string stmt2)
-{
-	ctemplate::TemplateDictionary dict("for");
-	dict.SetValue("BOOL", "1");
-	dict.SetValue("STMT1", stmt1);
-	dict.SetValue("STMT2", stmt2);
-	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/stmts/if.tpl",
-														ctemplate::DO_NOT_STRIP);
-	
-	string output;
-	tpl->Expand(&output, &dict);
-
-	return output;
-}
-
-
-string f_FOR(int count, string stmt)
-{
-	ctemplate::TemplateDictionary dict("for");
-	dict.SetValue("COUNT", to_string(count));
-	dict.SetValue("STMT", stmt);
-
-	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/stmts/for.tpl",
-														ctemplate::DO_NOT_STRIP);
-	
-	string output;
-	tpl->Expand(&output, &dict);
-
-	return output;
-}
-
-
-string f_CALL(int num)
-{
-	ctemplate::TemplateDictionary dict("call");
-	dict.SetValue("NUM", to_string(num));
-
-	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("./templates/stmts/call.tpl",
-														ctemplate::DO_NOT_STRIP);
-	
-	string output;
-	tpl->Expand(&output, &dict);
-
-	return output;
-}
-
-// TODO(kopbo): set deep limitation
-string getStmt(int deep)
-{
-	if (deep <= 0) return "";
-	deep--;
-	statment::STMT c = static_cast<statment::STMT>(rand() % 3);
-	switch (c) 
-	{
-		case statment::IF:
-		{
-			return f_IF(true, getStmt(deep), getStmt(deep));
-		}
-		case statment::FOR:
-		{
-			return f_FOR(rand()%10 + 1, getStmt(deep));
-		}
-		case statment::CALL:
-		{
-			return f_CALL(rand()%100 + 1);
-		}
-		default:
-		{
-			cout << "ERROR" << endl;
-			return "";
-		}
-	}
-}
-
-string generateMain(int i)
-{
-	if (i) return getStmt(RECURSION_DEEP) + generateMain(--i);
-	else return string("");
-}
-
+// Old version
 string Template::getMain()
 {
 	string output;
@@ -190,30 +97,82 @@ string Template::getMain()
 		sub_dict->SetValue("FUNC_CALL", to_string(*it));
 	}
 
-	// Compile template to output
-	ctemplate::ExpandTemplate("./templates/main.tpl",
-			ctemplate::DO_NOT_STRIP,
-			&dict,
-			&output);
-
-	return output;
+	return _fillTemplate(dict, "main.tpl");
 }
 
-string Template::getMainBody(int i)
+
+
+/*
+			Private Methods
+___________________________________________________
+*/
+
+
+// TODO(kopbob): translate bool to string for COUNT param
+string f_IF(bool boolSTMT, string stmt1 ,string stmt2)
 {
-	string output;
-	ctemplate::TemplateDictionary dict("BODY");
-	dict.SetValue("BODY", generateMain(i));
-
-	// Compile template to output
-	ctemplate::ExpandTemplate("./templates/main/body.tpl",
-			ctemplate::DO_NOT_STRIP,
-			&dict,
-			&output);
-	// cout << generateMain(1) << endl;
-
-	return output;
+	ctemplate::TemplateDictionary dict("for");
+	dict.SetValue("BOOL", "1");
+	dict.SetValue("STMT1", stmt1);
+	dict.SetValue("STMT2", stmt2);
+	
+	return _fillTemplate(dict, "stmts/if.tpl");
 }
+
+
+string f_FOR(int count, string stmt)
+{
+	ctemplate::TemplateDictionary dict("for");
+	dict.SetValue("COUNT", to_string(count));
+	dict.SetValue("STMT", stmt);
+
+	return _fillTemplate(dict, "stmts/for.tpl");
+}
+
+
+string f_CALL(int num)
+{
+	ctemplate::TemplateDictionary dict("call");
+	dict.SetValue("NUM", to_string(num));
+
+	return _fillTemplate(dict, "stmts/call.tpl");
+}
+
+// TODO(kopbo): set deep limitation
+string Template::_getStmt(int deep)
+{
+	if (deep <= 0) return "";
+	deep--;
+	statment::STMT c = static_cast<statment::STMT>(rand() % 3);
+	switch (c) 
+	{
+		case statment::IF:
+		{
+			return f_IF(true, _getStmt(deep), _getStmt(deep));
+		}
+		case statment::FOR:
+		{
+			return f_FOR(rand()%10 + 1, _getStmt(deep));
+		}
+		case statment::CALL:
+		{
+			return f_CALL(rand()%100 + 1);
+		}
+		default:
+		{
+			cout << "ERROR" << endl;
+			return "";
+		}
+	}
+}
+
+string Template::_generateMain(int i)
+{
+	if (i) return _getStmt(RECURSION_DEEP) + _generateMain(--i);
+	else return string("");
+}
+
+
 
 
 
