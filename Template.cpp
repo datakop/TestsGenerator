@@ -7,6 +7,8 @@
 #include <random>
 #include <ctime>
 
+#define RECURSION_DEEP 20
+
 using namespace std;
 
 namespace statment {
@@ -14,11 +16,36 @@ namespace statment {
 }
 
 
+/*
+			Constructor and Destructor
+___________________________________________________
+*/
+
 Template::Template()
 {
 	srand (time(NULL));
 }
 
+
+Template::~Template()
+{
+	// cout << "Destroy Template." << endl;
+}
+
+
+
+
+
+/*
+			Public Methods
+___________________________________________________
+*/
+
+
+/*
+			Private Methods
+___________________________________________________
+*/
 
 string Template::getHeader()
 {
@@ -112,19 +139,21 @@ string f_CALL(int num)
 	return output;
 }
 
-
-string getStmt()
+// TODO(kopbo): set deep limitation
+string getStmt(int deep)
 {
+	if (deep <= 0) return "";
+	deep--;
 	statment::STMT c = static_cast<statment::STMT>(rand() % 3);
 	switch (c) 
 	{
 		case statment::IF:
 		{
-			return f_IF(true, getStmt(), getStmt());
+			return f_IF(true, getStmt(deep), getStmt(deep));
 		}
 		case statment::FOR:
 		{
-			return f_FOR(rand()%10 + 1, getStmt());
+			return f_FOR(rand()%10 + 1, getStmt(deep));
 		}
 		case statment::CALL:
 		{
@@ -140,7 +169,7 @@ string getStmt()
 
 string generateMain(int i)
 {
-	if (i) return getStmt() + generateMain(--i);
+	if (i) return getStmt(RECURSION_DEEP) + generateMain(--i);
 	else return string("");
 }
 
@@ -166,7 +195,6 @@ string Template::getMain()
 			ctemplate::DO_NOT_STRIP,
 			&dict,
 			&output);
-	cout << generateMain(1) << endl;
 
 	return output;
 }
@@ -188,9 +216,6 @@ string Template::getMainBody(int i)
 }
 
 
-Template::~Template()
-{
-	// cout << "Destroy Template." << endl;
-}
+
 
 

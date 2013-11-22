@@ -7,6 +7,11 @@
 
 using namespace std;
 
+/*
+			Constructor and Destructor
+___________________________________________________
+*/
+
 Generator::Generator(int func_num, const char* file_name)
 {
 	_func_num = func_num;
@@ -14,6 +19,19 @@ Generator::Generator(int func_num, const char* file_name)
 
 	_template = new Template();
 }
+
+
+
+/*
+			Public Methods
+___________________________________________________
+*/
+
+
+/*
+			Private Methods
+___________________________________________________
+*/
 
 void Generator::generate(int i)
 {
@@ -31,7 +49,7 @@ void Generator::_generateHeader()
 
 void Generator::_generateFunctionsBody()
 {
-	for(int i = 0; i < _func_num; ++i)
+	for(int i = 1; i < _func_num; ++i)
 		_test_file << _template->getFunctionByNum(i) << endl;
 }
 
