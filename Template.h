@@ -5,11 +5,17 @@
 
 #include <string>
 #include <vector>
+#include <ctemplate/template.h>  
 
 class Template
 {
 private: 
 	std::vector<int> _funcNums;
+
+	std::string _getStmt(int);
+	std::string _generateMain(int);
+
+
 public:
 	Template();
 	~Template();
